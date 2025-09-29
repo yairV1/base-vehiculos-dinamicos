@@ -13,8 +13,12 @@ const totalPrecioEl = document.querySelector(".total");
 
 const defaultImg = "img/aventador.jpg";
 
-// Array del carrito
+// Array del carrito la cual guarda toda la informacion que se manda
 let carrito = [];
+
+// Array global para vehículos creados
+let vehiculos = JSON.parse(localStorage.getItem("vehiculos")) || [];
+
 
 
 // creacion de un vehiculo
@@ -93,6 +97,9 @@ form.addEventListener("submit", (e) => {
     const newCard = crearCard(vehiculo);
     contCars.appendChild(newCard);
 
+    //  Guardar en localStorage
+    vehiculos.push(vehiculo);
+    localStorage.setItem("vehiculos", JSON.stringify(vehiculos));
     form.reset();
 });
 
@@ -137,9 +144,11 @@ function createCardCarrito(vehiculo, index) {
     btnEliminar.classList.add("btn", "btn-danger", "col-md-2");
     btnEliminar.textContent = "X";
 
+    // Eliminar del carrito y actualizar localStorage
     btnEliminar.addEventListener("click", () => {
-        carrito.splice(index, 1);
-        actualizarCarrito();      
+        carrito = carrito.filter((item, i) => i !== index); // quitamos por índice
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        actualizarCarrito();
     });
 
     cont.appendChild(colImg);
@@ -148,7 +157,6 @@ function createCardCarrito(vehiculo, index) {
 
     return cont;
 }
-
 
 // total y actualizar
 function actualizarCarrito() {
@@ -164,3 +172,17 @@ function actualizarCarrito() {
 
     localStorage.setItem("carrito" , JSON.stringify(carrito));
 }
+// esto es para cuando se de actualizar o devolver lo que hace es que no se desaparesca las cosas o tarjetas que estan en la pantalla lo mismo aplica para el carrito
+window.addEventListener("DOMContentLoaded", () => {
+    // Cargar vehículos guardados
+    vehiculos.forEach((v) => {
+        const card = crearCard(v);
+        contCars.appendChild(card);
+    });
+
+    // Cargar carrito guardado
+    carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    actualizarCarrito();
+});
+
+
