@@ -55,14 +55,23 @@ function crearCard(vehiculo) {
 
     btnSuccess.addEventListener("click", () => {
         carrito.push(vehiculo);
-        actualizarCarrito();      
+        actualizarCarrito();
     });
 
     // Botón eliminar tarjeta de la lista
     const btnDanger = document.createElement("button");
     btnDanger.classList.add("btn", "btn-danger");
     btnDanger.textContent = "Eliminar";
-    btnDanger.addEventListener("click", () => col.remove());
+    btnDanger.addEventListener("click", () => {
+        col.remove(); // quita visualmente
+
+        // Quitar del array global
+        vehiculos = vehiculos.filter(v => v.nombre !== vehiculo.nombre);
+
+        // Actualizar localStorage
+        localStorage.setItem("vehiculos", JSON.stringify(vehiculos));
+    });
+
 
     contBtns.appendChild(btnSuccess);
     contBtns.appendChild(btnDanger);
@@ -79,7 +88,7 @@ function crearCard(vehiculo) {
 // formulario
 form.addEventListener("submit", (e) => {
     e.preventDefault();
-
+// tenemos la constante la cual no pide todos lo datos 
     const vehiculo = {
         foto: fotoInput.value.trim() || defaultImg,
         nombre: nombreInput.value.trim(),
@@ -93,7 +102,7 @@ form.addEventListener("submit", (e) => {
         alert("Todos los campos son obligatorios");
         return;
     }
-
+// se crar newCard para llamar todo osea es muy importante
     const newCard = crearCard(vehiculo);
     contCars.appendChild(newCard);
 
@@ -101,6 +110,11 @@ form.addEventListener("submit", (e) => {
     vehiculos.push(vehiculo);
     localStorage.setItem("vehiculos", JSON.stringify(vehiculos));
     form.reset();
+    btnEliminar.addEventListener("click", () => {
+        carrito = carrito.filter((item, i) => i !== index); // quitamos por índice
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        actualizarCarrito();
+    });
 });
 
 
@@ -170,7 +184,7 @@ function actualizarCarrito() {
     let total = carrito.reduce((suma, auto) => suma + auto.precio, 0);
     totalPrecioEl.textContent = `Total = $${total.toLocaleString("es-CL")}`;
 
-    localStorage.setItem("carrito" , JSON.stringify(carrito));
+    localStorage.setItem("carrito", JSON.stringify(carrito));
 }
 // esto es para cuando se de actualizar o devolver lo que hace es que no se desaparesca las cosas o tarjetas que estan en la pantalla lo mismo aplica para el carrito
 window.addEventListener("DOMContentLoaded", () => {
